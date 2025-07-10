@@ -37,6 +37,7 @@ export default function DashboardPage() {
         .select('total, data_pedido')
         .eq('usuario_id', user.id)
         .gte('data_pedido', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString())
+        .neq('status', 'cancelado')
 
       if (!pedidosError && pedidosData) {
         setTotalPedidos(pedidosData.length)

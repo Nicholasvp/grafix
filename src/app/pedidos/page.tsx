@@ -33,6 +33,8 @@ export default function NovoPedidoPage() {
   const [clientes, setClientes] = useState<Cliente[]>([])
   const [itens, setItens] = useState<Item[]>([])
   const [clienteSelecionado, setClienteSelecionado] = useState('')
+  const [buscaCliente, setBuscaCliente] = useState('')
+  const [mostrarListaClientes, setMostrarListaClientes] = useState(false)
   const [pedidoItens, setPedidoItens] = useState<PedidoItem[]>([])
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
@@ -48,6 +50,19 @@ export default function NovoPedidoPage() {
   useEffect(() => {
     carregarDados()
   }, [user])
+
+  // Fechar lista de clientes quando clicar fora
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement
+      if (!target.closest('.cliente-selector')) {
+        setMostrarListaClientes(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   const carregarDados = async () => {
     if (!user) return
@@ -114,6 +129,22 @@ export default function NovoPedidoPage() {
     } finally {
       setCriandoItem(false)
     }
+  }
+
+  const clientesFiltrados = clientes.filter(cliente => 
+    cliente.nome.toLowerCase().includes(buscaCliente.toLowerCase())
+  )
+
+  const selecionarCliente = (cliente: Cliente) => {
+    setClienteSelecionado(cliente.id)
+    setBuscaCliente(cliente.nome)
+    setMostrarListaClientes(false)
+  }
+
+  const limparSelecaoCliente = () => {
+    setClienteSelecionado('')
+    setBuscaCliente('')
+    setMostrarListaClientes(false)
   }
 
   const adicionarItemAoPedido = (itemId: string) => {
@@ -220,6 +251,7 @@ export default function NovoPedidoPage() {
       
       // Limpar formulário
       setClienteSelecionado('')
+      setBuscaCliente('')
       setPedidoItens([])
       
       // Redirecionar para a lista de pedidos após 1.5 segundos
@@ -247,19 +279,71 @@ export default function NovoPedidoPage() {
             <label htmlFor="cliente" className="block text-sm font-medium text-gray-900 mb-2">
               Cliente *
             </label>
-            <select
-              id="cliente"
-              value={clienteSelecionado}
-              onChange={(e) => setClienteSelecionado(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
-            >
-              <option value="">Selecione um cliente</option>
-              {clientes.map((cliente) => (
-                <option key={cliente.id} value={cliente.id}>
-                  {cliente.nome}
-                </option>
-              ))}
-            </select>
+            <div className="relative cliente-selector">
+              <input
+                type="text"
+                value={buscaCliente}
+                onChange={(e) => {
+                  setBuscaCliente(e.target.value)
+                  setMostrarListaClientes(true)
+                  if (e.target.value === '') {
+                    setClienteSelecionado('')
+                  }
+                }}
+                onFocus={() => setMostrarListaClientes(true)}
+                placeholder="Digite o nome do cliente para buscar..."
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+              />
+              {clienteSelecionado && (
+                <button
+                  type="button"
+                  onClick={limparSelecaoCliente}
+                  className="absolute right-2 top-2 text-gray-400 hover:text-gray-600"
+                >
+                  ✕
+                </button>
+              )}
+              
+              {/* Lista de clientes filtrados */}
+              {mostrarListaClientes && buscaCliente && (
+                <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
+                  {clientesFiltrados.length > 0 ? (
+                    <>
+                      {clientesFiltrados.map((cliente) => (
+                        <div
+                          key={cliente.id}
+                          onClick={() => selecionarCliente(cliente)}
+                          className="px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100"
+                        >
+                          <div className="font-medium text-gray-900">{cliente.nome}</div>
+                          {cliente.telefone && (
+                            <div className="text-sm text-gray-600">{cliente.telefone}</div>
+                          )}
+                        </div>
+                      ))}
+                      <div className="border-t border-gray-200 p-2">
+                        <button
+                          onClick={() => router.push('/clientes')}
+                          className="w-full bg-green-600 text-white px-3 py-2 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors text-sm"
+                        >
+                          + Criar novo cliente
+                        </button>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="px-3 py-2">
+                      <div className="text-gray-500 mb-2">Nenhum cliente encontrado</div>
+                      <button
+                        onClick={() => router.push('/clientes')}
+                        className="w-full bg-green-600 text-white px-3 py-2 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors text-sm"
+                      >
+                        + Criar novo cliente
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Seção de Itens */}
@@ -396,6 +480,7 @@ export default function NovoPedidoPage() {
             <button
               onClick={() => {
                 setClienteSelecionado('')
+                setBuscaCliente('')
                 setPedidoItens([])
                 setMessage('')
               }}
