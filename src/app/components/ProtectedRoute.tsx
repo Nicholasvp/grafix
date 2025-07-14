@@ -4,6 +4,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '../supabase'
+import { UserActivityProvider } from '../hooks/useUserActivity'
 
 interface ProtectedRouteProps {
   children: React.ReactNode
@@ -64,5 +65,9 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
     return null
   }
 
-  return <>{children}</>
+  return (
+    <UserActivityProvider>
+      {children}
+    </UserActivityProvider>
+  )
 }

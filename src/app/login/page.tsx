@@ -4,6 +4,7 @@
 import { useState } from 'react'
 import { supabase } from '../supabase'
 import { useRouter } from 'next/navigation'
+import Logo from '../components/Logo'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -39,13 +40,11 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Entre na sua conta
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Sistema de Gestão Grafix
-          </p>
+        <div className="text-center">
+          <div className="flex justify-center mb-6">
+            <Logo variant="vertical" width={100} height={100} />
+          </div>
+          
         </div>
         
         <div className="bg-white py-8 px-4 shadow-lg rounded-lg sm:px-10">
@@ -102,7 +101,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
               >
                 {loading ? 'Processando...' : 'Entrar'}
               </button>

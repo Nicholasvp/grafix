@@ -2,7 +2,7 @@
 'use client'
 
 import { useState } from 'react'
-import { supabase } from '../supabase'
+import { supabase } from '../lib/protectedSupabase'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import ProtectedRoute from '../components/ProtectedRoute'

@@ -2,7 +2,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { supabase } from '../supabase'
+import { supabase } from '../lib/protectedSupabase'
 import { useRouter } from 'next/navigation'
 import ProtectedRoute from '../components/ProtectedRoute'
 import Navbar from '../components/Navbar'
